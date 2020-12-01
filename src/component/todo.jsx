@@ -4,7 +4,7 @@ class Todo extends Component {
     state = {  }
     render() { 
 
-        const { item: todo} = this.props;
+        const { item: todo, onDelete} = this.props;
 
         return ( 
             <li className="todo">
@@ -18,7 +18,7 @@ class Todo extends Component {
                 <label className={"todo-text " + (todo.state ? 'todo-checked-text': '')}>
                     {todo.title}
                 </label>
-                <button className="delete-button">×</button>
+                <button className="delete-button" onClick={()=> onDelete(todo)}>×</button>
             </li>
          );
     }
