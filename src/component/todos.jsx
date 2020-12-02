@@ -8,6 +8,7 @@ import Todo from './todo';
 class Todos extends Component {
     state = { 
         todos: [],
+        filter: false,
      }
 
     componentDidMount() {
@@ -40,7 +41,7 @@ class Todos extends Component {
     }
 
     handleFilter = state => {
-
+        this.setState({filter: state});
     }
 
     handleDelete = todo => {
@@ -59,8 +60,35 @@ class Todos extends Component {
         return result;
     }
 
+    handleDeleteCompleted = () => {
+        const todos = this.state.todos.filter(t => t.state !== true);
+        this.setState({todos});
+    }
+
+    handleStateChange = todo => {
+        const todos = this.state.todos.map(t => {
+            if (t._id === todo._id)
+                t.state = !t.state;
+            return t;
+        });
+        this.setState({todos});
+    }
+
+    getFiterredData = items => {
+        const {filter} = this.state;
+        
+        if(filter === undefined)
+            return items;
+
+        if(filter)
+            return items.filter(i => i.state === true);
+        else
+            return items.filter(i => i.state === false);
+    }
+
     render() { 
-        const { todos } = this.state;
+        const { todos, filter } = this.state;
+        const filterred = this.getFiterredData(todos);
 
         return ( 
             <div id="hero" className="hero">
@@ -69,11 +97,21 @@ class Todos extends Component {
                     <div id="todoMenu1" className="todo-menu-1">
                         <SelectAll onSelect={this.handleSelectToggle}/>
                         <Add onAdd={this.handleAdd}/>
+                        
                     </div>
                     <ul id="todos" className="todos" aria-label="List of to do tasks">
-                        {todos.map(todo => <Todo key={todo._id} item={todo} onDelete={this.handleDelete} />)}
+                        {filterred.map(todo => (
+                            <Todo 
+                                key={todo._id} 
+                                item={todo} 
+                                onDelete={this.handleDelete}
+                                onStateChange={this.handleStateChange} />
+                            ))}
                     </ul>
-                    <Filter onFilter={this.handleFilter}/>
+                    <Filter 
+                        onFilter={this.handleFilter} 
+                        onDeleteCompleted={this.handleDeleteCompleted}
+                        filter={filter}/>
                 </div>
             </div>
          );
